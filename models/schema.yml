@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: course_olist
+    tables:
+      - name: orders_dataset
+      - name: order_items_dataset      
+      - name: order_reviews_dataset
+      - name: products_dataset
+      - name: order_payments_dataset
+      - name: customers_dataset
+      - name: geolocation_dataset
+      - name: sellers_dataset
+      - name: product_category_name_translation
+      
+      
+      
