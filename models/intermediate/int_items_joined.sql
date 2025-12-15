@@ -44,7 +44,7 @@ final AS (
             translations.product_category_name_english,
             translations.product_category_name_pt,
             products.product_category_name,
-            'N/A'
+            'Unknown'
         ) AS product_category_name,
         products.product_name_length,
         products.product_description_length,
