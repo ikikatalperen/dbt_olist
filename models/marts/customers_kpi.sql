@@ -8,7 +8,8 @@ WITH base AS (
         avg_order_value,
         avg_days_between_orders,
         customer_lifetime_days,
-        recency_days
+        recency_days,
+        customer_state
     FROM {{ ref('int_customers_joined') }}
 ),
 
@@ -80,13 +81,14 @@ customer_total_scored AS (
      + avg_order_value_score 
      + clv_score 
      + order_interval_score 
-     + recency_score)/5) AS customer_total_score,
+     + recency_score)/5.0) AS customer_total_score
      FROM recency_scored
 )
 
 
 SELECT
     customer_unique_id,
+    customer_state,
     nb_orders,
     clv,
     avg_order_value,
@@ -108,6 +110,8 @@ SELECT
     WHEN customer_total_score >= 2.0 THEN 'Promising'
     WHEN customer_total_score >= 1.4 THEN 'At Risk'
     ELSE 'Churned'
-END AS customer_segment
+END AS customer_segment,
 
-FROM customer_total_scored
+ROUND(SUM(clv) OVER (PARTITION BY customer_state),2) AS total_price_state
+
+FROM customer_total_scored 

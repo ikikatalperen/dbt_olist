@@ -8,7 +8,9 @@ WITH base AS (
         customer_id,
         customer_unique_id,
         order_purchase_date,
-        total_order_value
+        total_order_value,
+        customer_state
+        
     FROM {{ ref('int_orders_joined') }}
 ),
 
@@ -18,7 +20,7 @@ with_lag AS (
         order_id,
         order_purchase_date,
         total_order_value,
-      
+        
         LAG(order_purchase_date) OVER (
             PARTITION BY customer_unique_id
             ORDER BY order_purchase_date
@@ -32,6 +34,7 @@ with_gap AS (
         order_id,
         order_purchase_date,
         total_order_value,
+       
 
         DATE_DIFF(
             DATE(order_purchase_date),
@@ -44,6 +47,7 @@ with_gap AS (
 customer_metrics AS (
     SELECT
         customer_unique_id,
+        
 
         -- Sipariş sayısı
         COUNT(DISTINCT order_id) AS nb_orders,
@@ -81,5 +85,7 @@ customer_metrics AS (
     GROUP BY customer_unique_id
 )
 
-SELECT *
-FROM customer_metrics
+SELECT c.*,
+b.customer_state
+FROM customer_metrics AS c
+LEFT JOIN base AS b ON b.customer_unique_id = c.customer_unique_id 
